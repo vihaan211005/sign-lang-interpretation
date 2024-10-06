@@ -16,22 +16,42 @@
 package com.google.mediapipe.examples.gesturerecognizer.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.textservice.SentenceSuggestionsInfo
+import android.view.textservice.SpellCheckerSession
+import android.view.textservice.SuggestionsInfo
+import android.view.textservice.TextInfo
+import android.view.textservice.TextServicesManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mediapipe.examples.gesturerecognizer.databinding.ItemGestureRecognizerResultBinding
 import com.google.mediapipe.tasks.components.containers.Category
 import java.util.Locale
 import kotlin.math.min
 
-class GestureRecognizerResultsAdapter :
-    RecyclerView.Adapter<GestureRecognizerResultsAdapter.ViewHolder>() {
+class GestureRecognizerResultsAdapter(private val context: Context) :
+    RecyclerView.Adapter<GestureRecognizerResultsAdapter.ViewHolder>(),
+    SpellCheckerSession.SpellCheckerSessionListener {
     companion object {
         private const val NO_VALUE = "--"
     }
 
     private var adapterCategories: MutableList<Category?> = mutableListOf()
     private var adapterSize: Int = 0
+
+    private var previous = "A"
+    private var how_much = 0
+    private var total = ""
+    private var corrected = ""
+
+    private var spellCheckerSession: SpellCheckerSession? = null
+
+    init {
+        // Initialize the SpellCheckerSession
+        val textServicesManager = context.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE) as TextServicesManager
+        spellCheckerSession = textServicesManager.newSpellCheckerSession(null, Locale.getDefault(), this, true)
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateResults(categories: List<Category>?) {
@@ -65,11 +85,72 @@ class GestureRecognizerResultsAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         adapterCategories[position].let { category ->
-            holder.bind(category?.categoryName(), category?.score())
+            if (category?.score() != null && category.score() > 0.7) {
+                var ls = category.categoryName()
+                if(ls=="Z") ls = " "
+                if (ls == previous) {
+                    how_much += 1
+                } else {
+                    how_much = 0
+                    previous = ls
+                }
+            } else {
+                how_much = 0
+            }
+
+            if (how_much == 20) {
+                total += previous
+                corrected += previous
+                if (previous == " ") {
+                    // Trigger the spell checker for the total sentence
+                    spellCheckerSession?.getSentenceSuggestions(arrayOf(TextInfo(total)), 1)
+                }
+            }
+
+            holder.bind(corrected, category?.score())
         }
     }
 
     override fun getItemCount(): Int = adapterCategories.size
+
+    override fun onGetSuggestions(p0: Array<out SuggestionsInfo>?) {
+    }
+
+    override fun onGetSentenceSuggestions(results: Array<SentenceSuggestionsInfo>?) {
+        results?.forEach { sentenceSuggestion ->
+            val correctedSentence = StringBuilder()
+            for (i in 0 until sentenceSuggestion.suggestionsCount) {
+                val wordSuggestions = sentenceSuggestion.getSuggestionsInfoAt(i)
+                if (wordSuggestions.suggestionsCount > 0) {
+                    // Use the first suggestion for each misspelled word
+                    correctedSentence.append(wordSuggestions.getSuggestionAt(0)).append(" ")
+                } else {
+                    // Use the original word if no suggestions are available
+                    val originalStart = sentenceSuggestion.getOffsetAt(i)
+                    val originalLength = sentenceSuggestion.getLengthAt(i)
+                    correctedSentence.append(total.substring(originalStart, originalStart + originalLength)).append(" ")
+                }
+            }
+            // Update the corrected sentence
+            corrected = correctedSentence.toString().trim().capitalizeWords() + " "
+            println(corrected)
+        }
+
+        // Notify that data has changed to update the UI with the corrected sentence
+        notifyDataSetChanged()
+    }
+
+    fun closeSpellCheckerSession() {
+        spellCheckerSession?.close()
+    }
+
+    fun String.capitalizeWords(delimiter: String = " ") =
+        split(delimiter).joinToString(delimiter) { word ->
+
+            val smallCaseWord = word.lowercase()
+            smallCaseWord.replaceFirstChar(Char::titlecaseChar)
+
+        }
 
     inner class ViewHolder(private val binding: ItemGestureRecognizerResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
