@@ -25,6 +25,10 @@ class MainViewModel : ViewModel() {
         .DEFAULT_HAND_TRACKING_CONFIDENCE
     private var _minHandPresenceConfidence: Float = GestureRecognizerHelper
         .DEFAULT_HAND_PRESENCE_CONFIDENCE
+    private var _minGestureConfidence: Float = GestureRecognizerHelper
+        .DEFAULT_MIN_GESTURE_CONFIDENCE
+    private var _minFramesConfidence: Int = GestureRecognizerHelper
+        .DEFAULT_MIN_FRAMES_CONFIDENCE
     val currentDelegate: Int get() = _delegate
     val currentMinHandDetectionConfidence: Float
         get() =
@@ -35,6 +39,13 @@ class MainViewModel : ViewModel() {
     val currentMinHandPresenceConfidence: Float
         get() =
             _minHandPresenceConfidence
+    val currentMinGestureConfidence: Float
+        get() =
+            _minGestureConfidence
+    val currentMinFramesConfidence: Int
+        get() =
+            _minFramesConfidence
+
 
     fun setDelegate(delegate: Int) {
         _delegate = delegate
@@ -50,5 +61,13 @@ class MainViewModel : ViewModel() {
 
     fun setMinHandPresenceConfidence(confidence: Float) {
         _minHandPresenceConfidence = confidence
+    }
+
+    fun setMinGestureConfidence(confidence: Float) {
+        _minGestureConfidence = confidence
+    }
+
+    fun setMinFramesConfidence(confidence: Int) {
+        _minFramesConfidence = confidence
     }
 }

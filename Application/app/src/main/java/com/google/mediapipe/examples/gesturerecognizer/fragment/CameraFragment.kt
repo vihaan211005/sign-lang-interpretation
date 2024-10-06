@@ -95,6 +95,8 @@ class CameraFragment : Fragment(),
             viewModel.setMinHandDetectionConfidence(gestureRecognizerHelper.minHandDetectionConfidence)
             viewModel.setMinHandTrackingConfidence(gestureRecognizerHelper.minHandTrackingConfidence)
             viewModel.setMinHandPresenceConfidence(gestureRecognizerHelper.minHandPresenceConfidence)
+            viewModel.setMinGestureConfidence(gestureRecognizerHelper.minGestureConfidence)
+            viewModel.setMinFramesConfidence(gestureRecognizerHelper.minFramesConfidence)
             viewModel.setDelegate(gestureRecognizerHelper.currentDelegate)
 
             // Close the Gesture Recognizer helper and release resources
@@ -173,6 +175,14 @@ class CameraFragment : Fragment(),
             String.format(
                 Locale.US, "%.2f", viewModel.currentMinHandPresenceConfidence
             )
+        fragmentCameraBinding.bottomSheetLayout.gestureThresholdValue.text =
+            String.format(
+                Locale.US, "%.2f", viewModel.currentMinGestureConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.framesThresholdValue.text =
+            String.format(
+                Locale.US, "%d", viewModel.currentMinFramesConfidence
+            )
 
         // When clicked, lower hand detection score threshold floor
         fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
@@ -222,6 +232,38 @@ class CameraFragment : Fragment(),
             }
         }
 
+        // When clicked, lower hand presence score threshold floor
+        fragmentCameraBinding.bottomSheetLayout.gestureThresholdMinus.setOnClickListener {
+            if (gestureRecognizerHelper.minGestureConfidence >= 0.5) {
+                gestureRecognizerHelper.minGestureConfidence -= 0.05f
+                updateControlsUi()
+            }
+        }
+
+        // When clicked, raise hand presence score threshold floor
+        fragmentCameraBinding.bottomSheetLayout.gestureThresholdPlus.setOnClickListener {
+            if (gestureRecognizerHelper.minGestureConfidence <= 1) {
+                gestureRecognizerHelper.minGestureConfidence += 0.05f
+                updateControlsUi()
+            }
+        }
+
+        // When clicked, lower hand presence score threshold floor
+        fragmentCameraBinding.bottomSheetLayout.framesThresholdMinus.setOnClickListener {
+            if (gestureRecognizerHelper.minFramesConfidence >= 5) {
+                gestureRecognizerHelper.minFramesConfidence -= 2
+                updateControlsUi()
+            }
+        }
+
+        // When clicked, raise hand presence score threshold floor
+        fragmentCameraBinding.bottomSheetLayout.framesThresholdPlus.setOnClickListener {
+            if (gestureRecognizerHelper.minFramesConfidence <= 30) {
+                gestureRecognizerHelper.minFramesConfidence += 2
+                updateControlsUi()
+            }
+        }
+
         // When clicked, change the underlying hardware used for inference.
         // Current options are CPU and GPU
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
@@ -250,6 +292,11 @@ class CameraFragment : Fragment(),
     // Update the values displayed in the bottom sheet. Reset recognition
     // helper.
     private fun updateControlsUi() {
+
+        gestureRecognizerResultAdapter.minGestureConfidence = gestureRecognizerHelper.minGestureConfidence
+        gestureRecognizerResultAdapter.minFramesConfidence = gestureRecognizerHelper.minFramesConfidence
+
+
         fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
             String.format(
                 Locale.US,
@@ -267,6 +314,18 @@ class CameraFragment : Fragment(),
                 Locale.US,
                 "%.2f",
                 gestureRecognizerHelper.minHandPresenceConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.gestureThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%.2f",
+                gestureRecognizerHelper.minGestureConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.framesThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%d",
+                gestureRecognizerHelper.minFramesConfidence
             )
 
         // Needs to be cleared instead of reinitialized because the GPU

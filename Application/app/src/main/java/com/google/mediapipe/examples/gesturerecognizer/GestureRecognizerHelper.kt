@@ -36,6 +36,8 @@ class GestureRecognizerHelper(
     var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
     var minHandTrackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
+    var minGestureConfidence: Float = DEFAULT_MIN_GESTURE_CONFIDENCE,
+    var minFramesConfidence: Int = DEFAULT_MIN_FRAMES_CONFIDENCE,
     var currentDelegate: Int = DELEGATE_CPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -330,6 +332,9 @@ class GestureRecognizerHelper(
         const val DEFAULT_HAND_PRESENCE_CONFIDENCE = 0.5F
         const val OTHER_ERROR = 0
         const val GPU_ERROR = 1
+
+        const val DEFAULT_MIN_GESTURE_CONFIDENCE = 0.65F
+        const val DEFAULT_MIN_FRAMES_CONFIDENCE = 20
     }
 
     data class ResultBundle(

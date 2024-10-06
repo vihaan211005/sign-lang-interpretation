@@ -224,6 +224,14 @@ class GalleryFragment : Fragment(),
             String.format(
                 Locale.US, "%.2f", viewModel.currentMinHandPresenceConfidence
             )
+        fragmentGalleryBinding.bottomSheetLayout.gestureThresholdValue.text =
+            String.format(
+                Locale.US, "%.2f", viewModel.currentMinGestureConfidence
+            )
+        fragmentGalleryBinding.bottomSheetLayout.framesThresholdValue.text =
+            String.format(
+                Locale.US, "%.2f", viewModel.currentMinFramesConfidence
+            )
 
         fragmentGalleryBinding.overlay.clear()
         fragmentGalleryBinding.tvPlaceholder.visibility = View.VISIBLE

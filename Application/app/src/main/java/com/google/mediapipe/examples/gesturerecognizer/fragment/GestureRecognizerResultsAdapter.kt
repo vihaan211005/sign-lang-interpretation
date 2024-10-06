@@ -47,6 +47,9 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
 
     private var spellCheckerSession: SpellCheckerSession? = null
 
+    var minGestureConfidence : Float = 0.65F
+    var minFramesConfidence : Int = 20
+
     init {
         // Initialize the SpellCheckerSession
         val textServicesManager = context.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE) as TextServicesManager
@@ -85,7 +88,8 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         adapterCategories[position].let { category ->
-            if (category?.score() != null && category.score() > 0.7) {
+            println(minGestureConfidence)
+            if (category?.score() != null && category.score() > minGestureConfidence) {
                 var ls = category.categoryName()
                 if(ls=="Z") ls = " "
                 if (ls == previous) {
@@ -98,7 +102,7 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
                 how_much = 0
             }
 
-            if (how_much == 20) {
+            if (how_much == minFramesConfidence) {
                 total += previous
                 corrected += previous
                 if (previous == " ") {
