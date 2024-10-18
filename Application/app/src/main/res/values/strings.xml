@@ -46,7 +46,7 @@
         Threshold</string>
     <string name="label_gesture_confidence_threshold">Gesture
         Threshold</string>
-    <string name="label_frames_confidence_threshold">Gesture
+    <string name="label_frames_confidence_threshold">Frame
         Threshold</string>
     <string name="label_delegate">Delegate</string>
 

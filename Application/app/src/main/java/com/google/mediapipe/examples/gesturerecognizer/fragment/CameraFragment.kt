@@ -20,6 +20,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -159,6 +160,21 @@ class CameraFragment : Fragment(),
 
         // Attach listeners to UI control widgets
         initBottomSheetControls()
+
+        // Add a touch listener to detect taps on the camera feed
+        fragmentCameraBinding.viewFinder.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                onTap(event)
+                true
+            } else {
+                false
+            }
+        }
+    }
+
+    private fun onTap(event: MotionEvent) {
+        gestureRecognizerResultAdapter.total = ""
+        gestureRecognizerResultAdapter.corrected = ""
     }
 
     private fun initBottomSheetControls() {

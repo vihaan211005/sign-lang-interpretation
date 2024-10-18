@@ -58,6 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_inference_time"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
@@ -67,6 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:gravity="end"
                 android:text="0ms"
                 android:textColor="@color/bottom_sheet_text_color"
@@ -109,6 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
+                    android:fontFamily="@font/nunito"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
                     android:textColor="@color/bottom_sheet_text_color"
@@ -134,6 +137,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_hand_tracking_confidence_threshold"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
@@ -158,6 +162,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
+                    android:fontFamily="@font/nunito"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
                     android:textColor="@color/bottom_sheet_text_color"
@@ -183,6 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_hand_presence_confidence_threshold"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
@@ -207,6 +213,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
+                    android:fontFamily="@font/nunito"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
                     android:textColor="@color/bottom_sheet_text_color"
@@ -232,6 +239,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_gesture_confidence_threshold"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
@@ -256,6 +264,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
+                    android:fontFamily="@font/nunito"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
                     android:textColor="@color/bottom_sheet_text_color"
@@ -281,6 +290,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_frames_confidence_threshold"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />
@@ -305,6 +315,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/bottom_sheet_control_text_side_margin"
                     android:layout_marginRight="@dimen/bottom_sheet_control_text_side_margin"
+                    android:fontFamily="@font/nunito"
                     android:gravity="center"
                     android:minEms="@integer/bottom_sheet_control_text_min_ems"
                     android:textColor="@color/bottom_sheet_text_color"
@@ -328,6 +339,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito"
                 android:text="@string/label_delegate"
                 android:textColor="@color/bottom_sheet_text_color"
                 android:textSize="@dimen/bottom_sheet_text_size" />

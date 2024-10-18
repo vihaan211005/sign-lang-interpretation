@@ -42,8 +42,8 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
 
     private var previous = "A"
     private var how_much = 0
-    private var total = ""
-    private var corrected = ""
+    public var total = ""
+    public var corrected = ""
 
     private var spellCheckerSession: SpellCheckerSession? = null
 
