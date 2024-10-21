@@ -91,7 +91,7 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
             println(minGestureConfidence)
             if (category?.score() != null && category.score() > minGestureConfidence) {
                 var ls = category.categoryName()
-                if(ls=="Z") ls = " "
+                if(ls=="space") ls = " "
                 if (ls == previous) {
                     how_much += 1
                 } else {

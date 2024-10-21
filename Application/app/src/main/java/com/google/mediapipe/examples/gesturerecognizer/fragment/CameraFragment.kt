@@ -445,7 +445,6 @@ class CameraFragment : Fragment(),
                 } else {
                     gestureRecognizerResultAdapter.updateResults(emptyList())
                 }
-
                 fragmentCameraBinding.bottomSheetLayout.inferenceTimeVal.text =
                     String.format("%d ms", resultBundle.inferenceTime)
 
