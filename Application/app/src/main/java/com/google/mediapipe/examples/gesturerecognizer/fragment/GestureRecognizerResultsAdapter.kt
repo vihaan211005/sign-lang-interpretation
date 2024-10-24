@@ -88,7 +88,6 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         adapterCategories[position].let { category ->
-            println(minGestureConfidence)
             if (category?.score() != null && category.score() > minGestureConfidence) {
                 var ls = category.categoryName()
                 if(ls=="space") ls = " "
