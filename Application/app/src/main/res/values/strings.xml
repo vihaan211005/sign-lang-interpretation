@@ -49,6 +49,13 @@
     <string name="label_frames_confidence_threshold">Frame
         Threshold</string>
     <string name="label_delegate">Delegate</string>
+    <string name="label_language">Language</string>
+
+    <string-array name="language_spinner_titles">
+        <item>English</item>
+        <item>Hindi</item>
+        <item>Marathi</item>
+    </string-array>
 
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>

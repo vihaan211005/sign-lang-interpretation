@@ -38,6 +38,7 @@ class GestureRecognizerHelper(
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
     var minGestureConfidence: Float = DEFAULT_MIN_GESTURE_CONFIDENCE,
     var minFramesConfidence: Int = DEFAULT_MIN_FRAMES_CONFIDENCE,
+    var currentLanguage: Int = LANGUAGE_ENGLISH,
     var currentDelegate: Int = DELEGATE_CPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -65,6 +66,7 @@ class GestureRecognizerHelper(
         // Set general recognition options, including number of used threads
         val baseOptionBuilder = BaseOptions.builder()
 
+        //
         // Use the specified hardware for running the model. Default to CPU
         when (currentDelegate) {
             DELEGATE_CPU -> {
@@ -325,6 +327,10 @@ class GestureRecognizerHelper(
         val TAG = "GestureRecognizerHelper ${this.hashCode()}"
         private const val MP_RECOGNIZER_TASK = "gesture_recognizer.task"
 
+        const val LANGUAGE_ENGLISH = 0
+        const val LANGUAGE_HINDI = 1
+        const val LANGUAGE_MARATHI = 2
+        const val LANGUAGE_URDU = 3
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
         const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.5F

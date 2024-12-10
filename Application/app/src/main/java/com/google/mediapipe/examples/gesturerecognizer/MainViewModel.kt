@@ -18,6 +18,7 @@ package com.google.mediapipe.examples.gesturerecognizer
 import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
+    private var _language: Int = GestureRecognizerHelper.LANGUAGE_ENGLISH
     private var _delegate: Int = GestureRecognizerHelper.DELEGATE_CPU
     private var _minHandDetectionConfidence: Float =
         GestureRecognizerHelper.DEFAULT_HAND_DETECTION_CONFIDENCE
@@ -29,6 +30,7 @@ class MainViewModel : ViewModel() {
         .DEFAULT_MIN_GESTURE_CONFIDENCE
     private var _minFramesConfidence: Int = GestureRecognizerHelper
         .DEFAULT_MIN_FRAMES_CONFIDENCE
+    val currentLanguage: Int get() = _language
     val currentDelegate: Int get() = _delegate
     val currentMinHandDetectionConfidence: Float
         get() =
@@ -46,6 +48,9 @@ class MainViewModel : ViewModel() {
         get() =
             _minFramesConfidence
 
+    fun setLanguage(language: Int) {
+        _language = language
+    }
 
     fun setDelegate(delegate: Int) {
         _delegate = delegate

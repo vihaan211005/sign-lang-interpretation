@@ -37,6 +37,10 @@ import com.google.mediapipe.examples.gesturerecognizer.MainViewModel
 import com.google.mediapipe.examples.gesturerecognizer.R
 import com.google.mediapipe.examples.gesturerecognizer.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.google.mlkit.common.model.DownloadConditions
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.TranslatorOptions
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -158,6 +162,43 @@ class CameraFragment : Fragment(),
             )
         }
 
+        //Create translator
+        val optionsHindi = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.HINDI)
+            .build()
+        val englishHindiTranslator = Translation.getClient(optionsHindi)
+
+        //Download translator
+        val conditions = DownloadConditions.Builder()
+            .build()
+        englishHindiTranslator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                // Model downloaded successfully. Okay to start translating.
+                // (Set a flag, unhide the translation UI, etc.)
+            }
+            .addOnFailureListener { exception ->
+                // Model couldn’t be downloaded or other internal error.
+                // ...
+            }
+        //Create translator
+        val optionsMarathi = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.MARATHI)
+            .build()
+        val englishMarathiTranslator = Translation.getClient(optionsMarathi)
+
+        //Download translator
+        englishMarathiTranslator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                // Model downloaded successfully. Okay to start translating.
+                // (Set a flag, unhide the translation UI, etc.)
+            }
+            .addOnFailureListener { exception ->
+                // Model couldn’t be downloaded or other internal error.
+                // ...
+            }
+
         // Attach listeners to UI control widgets
         initBottomSheetControls()
 
@@ -168,7 +209,32 @@ class CameraFragment : Fragment(),
         })
 
         fragmentCameraBinding.buttonSpeak.setOnClickListener(View.OnClickListener { // Handle the "Speak" button click here
-            gestureRecognizerResultAdapter.t1?.speak(gestureRecognizerResultAdapter.corrected, TextToSpeech.QUEUE_FLUSH, null);
+            if(gestureRecognizerHelper.currentLanguage == 0){
+                gestureRecognizerResultAdapter.t1?.setLanguage(Locale.ENGLISH)
+                gestureRecognizerResultAdapter.t1?.speak(gestureRecognizerResultAdapter.corrected, TextToSpeech.QUEUE_FLUSH, null);
+            }
+            if(gestureRecognizerHelper.currentLanguage == 1){
+                englishHindiTranslator.translate(gestureRecognizerResultAdapter.corrected)
+                    .addOnSuccessListener { translatedText ->
+                        gestureRecognizerResultAdapter.t1?.setLanguage(Locale("hi", "IN"))
+                        gestureRecognizerResultAdapter.t1?.speak(translatedText, TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    .addOnFailureListener { exception ->
+                        // Error.
+                        // ...
+                    }
+            }
+            if(gestureRecognizerHelper.currentLanguage == 2){
+                englishMarathiTranslator.translate(gestureRecognizerResultAdapter.corrected)
+                    .addOnSuccessListener { translatedText ->
+                        gestureRecognizerResultAdapter.t1?.setLanguage(Locale("mr", "IN"))
+                        gestureRecognizerResultAdapter.t1?.speak(translatedText, TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                    .addOnFailureListener { exception ->
+                        // Error.
+                        // ...
+                    }
+            }
         })
     }
 
@@ -280,6 +346,29 @@ class CameraFragment : Fragment(),
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
             viewModel.currentDelegate, false
         )
+        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.setSelection(
+            viewModel.currentLanguage, false
+        )
+
+        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+                ) {
+                    try {
+                        gestureRecognizerHelper.currentLanguage = p2
+                        updateControlsUi()
+                    } catch(e: UninitializedPropertyAccessException) {
+                        Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
+
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /* no op */
+                }
+            }
+
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

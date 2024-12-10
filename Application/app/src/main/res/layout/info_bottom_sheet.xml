@@ -331,6 +331,31 @@
             </LinearLayout>
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/bottom_sheet_default_row_margin">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito"
+                android:text="@string/label_language"
+                android:textColor="@color/bottom_sheet_text_color"
+                android:textSize="@dimen/bottom_sheet_text_size" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:entries="@array/language_spinner_titles"
+                android:minWidth="@dimen/bottom_sheet_spinner_delegate_min_width"
+                android:spinnerMode="dropdown"
+                android:theme="@style/BottomSheetSpinnerItemStyle" />
+
+        </RelativeLayout>
+
         <!-- Delegate selection row -->
         <RelativeLayout
             android:layout_width="match_parent"
