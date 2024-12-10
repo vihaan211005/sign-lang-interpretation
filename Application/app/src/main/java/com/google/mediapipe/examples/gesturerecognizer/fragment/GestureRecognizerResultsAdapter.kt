@@ -17,6 +17,7 @@ package com.google.mediapipe.examples.gesturerecognizer.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.textservice.SentenceSuggestionsInfo
@@ -45,6 +46,8 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
     public var total = ""
     public var corrected = ""
 
+    public var t1: TextToSpeech? = null
+
     private var spellCheckerSession: SpellCheckerSession? = null
 
     var minGestureConfidence : Float = 0.65F
@@ -54,6 +57,14 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
         // Initialize the SpellCheckerSession
         val textServicesManager = context.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE) as TextServicesManager
         spellCheckerSession = textServicesManager.newSpellCheckerSession(null, Locale.getDefault(), this, true)
+
+        t1 = TextToSpeech(
+            context.applicationContext
+        ) { status ->
+            if (status != TextToSpeech.ERROR) {
+                t1!!.setLanguage(Locale.ENGLISH)
+            }
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -135,8 +146,15 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
                 }
             }
             // Update the corrected sentence
-            corrected = correctedSentence.toString().trim().capitalizeWords() + " "
-            println(corrected)
+            corrected = correctedSentence.toString().trim().capitalizeWords()
+            val lastSpaceIndex = corrected.lastIndexOf(" ")
+            if (lastSpaceIndex == -1){
+                t1?.speak(corrected, TextToSpeech.QUEUE_FLUSH, null);
+            }else{
+                t1?.speak(corrected.substring(lastSpaceIndex + 1)  , TextToSpeech.QUEUE_FLUSH, null);
+            }
+            corrected+=" ";
+//            println(corrected)
         }
 
         // Notify that data has changed to update the UI with the corrected sentence

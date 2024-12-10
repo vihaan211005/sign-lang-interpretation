@@ -18,9 +18,9 @@ package com.google.mediapipe.examples.gesturerecognizer.fragment
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -161,20 +161,15 @@ class CameraFragment : Fragment(),
         // Attach listeners to UI control widgets
         initBottomSheetControls()
 
-        // Add a touch listener to detect taps on the camera feed
-        fragmentCameraBinding.viewFinder.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                onTap(event)
-                true
-            } else {
-                false
-            }
-        }
-    }
+        //Add btns clicks
+        fragmentCameraBinding.buttonClear.setOnClickListener(View.OnClickListener { // Handle the "Clear" button click here
+            gestureRecognizerResultAdapter.corrected = ""
+            gestureRecognizerResultAdapter.total = ""
+        })
 
-    private fun onTap(event: MotionEvent) {
-        gestureRecognizerResultAdapter.total = ""
-        gestureRecognizerResultAdapter.corrected = ""
+        fragmentCameraBinding.buttonSpeak.setOnClickListener(View.OnClickListener { // Handle the "Speak" button click here
+            gestureRecognizerResultAdapter.t1?.speak(gestureRecognizerResultAdapter.corrected, TextToSpeech.QUEUE_FLUSH, null);
+        })
     }
 
     private fun initBottomSheetControls() {
