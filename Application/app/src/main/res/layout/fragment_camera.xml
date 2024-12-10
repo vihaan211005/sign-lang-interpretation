@@ -20,41 +20,635 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/htu_page"
         android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@android:color/white"
-        android:elevation="4dp">
-
-        <!-- Close Button (Cross) -->
+        android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@android:color/white"
+            android:elevation="4dp">
 
-            <Button
-                android:id="@+id/close_button"
+            <!-- Close Button (Cross) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end">
+
+                <Button
+                    android:id="@+id/close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:text="✕"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/how_to_use_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="How To Use:\n\n1. Use standard ASL language and open palm for space(word breaker)\n2. Press CLEAR to clear text\n3. Press SPEAK to listen in desired language\n4. To change language choose from dropdown section"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:padding="8dp" />
+            <!-- ASL Characters Header -->
+            <TextView
+                android:id="@+id/asl_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ASL Characters:"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp" />
+            <!-- ASL Characters Grid -->
+            <GridLayout
+                android:id="@+id/asl_characters_grid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:text="✕"
-                android:textSize="18sp"
-                android:textColor="@android:color/black" />
+                android:columnCount="3"
+                android:padding="8dp"
+                android:useDefaultMargins="true"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp">
+                <!-- Example: A -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_a"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_a"
+                        android:contentDescription="ASL Letter A" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: B -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_b"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_b"
+                        android:contentDescription="ASL Letter B" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="B"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: C -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_c"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_c"
+                        android:contentDescription="ASL Letter C" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="C"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: D -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_d"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_d"
+                        android:contentDescription="ASL Letter D" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="D"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: E -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_e"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_e"
+                        android:contentDescription="ASL Letter E" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="E"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: F -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_f"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_f"
+                        android:contentDescription="ASL Letter F" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="F"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: G -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_g"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_g"
+                        android:contentDescription="ASL Letter G" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="G"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: H -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_h"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_h"
+                        android:contentDescription="ASL Letter H" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="H"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: I -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_i"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_i"
+                        android:contentDescription="ASL Letter I" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="I"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: J -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_j"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_j"
+                        android:contentDescription="ASL Letter J" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="J"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: K -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_k"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_k"
+                        android:contentDescription="ASL Letter K" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="K"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: L -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_l"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_l"
+                        android:contentDescription="ASL Letter L" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="L"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: M -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_m"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_m"
+                        android:contentDescription="ASL Letter M" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="M"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: N -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_n"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_n"
+                        android:contentDescription="ASL Letter N" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="N"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: O -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_o"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_o"
+                        android:contentDescription="ASL Letter O" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="O"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: P -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_p"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_p"
+                        android:contentDescription="ASL Letter P" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="P"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: Q -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_q"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_q"
+                        android:contentDescription="ASL Letter Q" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Q"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: R -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_r"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_r"
+                        android:contentDescription="ASL Letter R" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="R"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: S -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_s"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_s"
+                        android:contentDescription="ASL Letter S" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="S"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: T -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_t"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_t"
+                        android:contentDescription="ASL Letter T" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="T"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: U -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_u"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_u"
+                        android:contentDescription="ASL Letter U" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="U"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: V -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_v"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_v"
+                        android:contentDescription="ASL Letter V" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="V"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: W -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_w"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_w"
+                        android:contentDescription="ASL Letter W" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="W"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: X -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_x"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_x"
+                        android:contentDescription="ASL Letter X" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: Y -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_y"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_y"
+                        android:contentDescription="ASL Letter Y" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Y"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: Z -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_z"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_z"
+                        android:contentDescription="ASL Letter Z" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Z"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Example: space -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_margin="4dp">
+                    <ImageView
+                        android:id="@+id/asl_image_space"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/asl_space"
+                        android:contentDescription="ASL Letter Space" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Space"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:gravity="center" />
+                </LinearLayout>
+                <!-- Repeat the above structure for all characters B-Z -->
+            </GridLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/how_to_use_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="How To Use:\n\n1. Use standard ASL language and open palm for space(word breaker)\n2. Press CLEAR to clear text\n3. Press SPEAK to listen in desired language\n4. To change language choose from dropdown section"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:padding="8dp" />
-    </LinearLayout>
+    </ScrollView>
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
