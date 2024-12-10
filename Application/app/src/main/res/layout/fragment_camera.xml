@@ -20,6 +20,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:id="@+id/htu_page"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="4dp">
+
+        <!-- Close Button (Cross) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/close_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:text="✕"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/how_to_use_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How To Use:\n\n1. Use standard ASL language and open palm for space(word breaker)\n2. Press CLEAR to clear text\n3. Press SPEAK to listen in desired language\n4. To change language choose from dropdown section"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:padding="8dp" />
+    </LinearLayout>
+
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"
         android:layout_width="match_parent"
@@ -37,30 +73,55 @@
 
     <!-- Buttons -->
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
         android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/button_clear"
-            android:layout_width="wrap_content"
+        <!-- Line 1: How To Use Button -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Clear"
-            android:backgroundTint="@color/mp_color_primary"
-            android:textColor="@android:color/white" />
+            android:orientation="horizontal"
+            android:gravity="center">
 
-        <Button
-            android:id="@+id/button_speak"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/button_htu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How To Use"
+                android:backgroundTint="@color/mp_color_primary"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <!-- Line 2: Clear and Speak Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Speak"
-            android:backgroundTint="@color/mp_color_primary"
-            android:textColor="@android:color/white" />
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/button_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Clear"
+                android:backgroundTint="@color/mp_color_primary"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/button_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speak"
+                android:backgroundTint="@color/mp_color_primary"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
     </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_results"
@@ -76,6 +137,7 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <View
+        android:id="@+id/upArrow"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:background="@color/mp_color_primary"

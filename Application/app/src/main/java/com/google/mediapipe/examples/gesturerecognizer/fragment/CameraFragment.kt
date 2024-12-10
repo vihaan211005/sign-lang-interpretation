@@ -202,7 +202,28 @@ class CameraFragment : Fragment(),
         // Attach listeners to UI control widgets
         initBottomSheetControls()
 
-        //Add btns clicks
+        //How to use
+        fragmentCameraBinding.buttonHtu.setOnClickListener(View.OnClickListener { // Handle the "HTU" button click here
+            fragmentCameraBinding.viewFinder.visibility = View.INVISIBLE
+            fragmentCameraBinding.buttons.visibility = View.INVISIBLE
+            fragmentCameraBinding.overlay.visibility = View.INVISIBLE
+            fragmentCameraBinding.recyclerviewResults.visibility = View.INVISIBLE
+            fragmentCameraBinding.upArrow.visibility = View.INVISIBLE
+
+            fragmentCameraBinding.htuPage.visibility = View.VISIBLE
+        })
+
+        fragmentCameraBinding.closeButton.setOnClickListener(View.OnClickListener { // Handle the "close HTU" button click here}
+            fragmentCameraBinding.viewFinder.visibility = View.VISIBLE
+            fragmentCameraBinding.buttons.visibility = View.VISIBLE
+            fragmentCameraBinding.overlay.visibility = View.VISIBLE
+            fragmentCameraBinding.recyclerviewResults.visibility = View.VISIBLE
+            fragmentCameraBinding.upArrow.visibility = View.VISIBLE
+
+            fragmentCameraBinding.htuPage.visibility = View.INVISIBLE
+        })
+
+            //Add btns clicks
         fragmentCameraBinding.buttonClear.setOnClickListener(View.OnClickListener { // Handle the "Clear" button click here
             gestureRecognizerResultAdapter.corrected = ""
             gestureRecognizerResultAdapter.total = ""
