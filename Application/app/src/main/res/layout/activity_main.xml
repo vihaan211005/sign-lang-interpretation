@@ -37,20 +37,5 @@
             app:navGraph="@navigation/nav_graph"
             tools:context=".MainActivity" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/navigation"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_below="@+id/fragment_container"
-            app:itemIconTint="@color/bg_nav_item"
-            app:itemTextColor="@color/bg_nav_item"
-            app:menu="@menu/menu_bottom_nav" />
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_below="@id/navigation"
-            android:background="@android:color/darker_gray" />
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
