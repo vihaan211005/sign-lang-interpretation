@@ -148,24 +148,17 @@ class GestureRecognizerResultsAdapter(private val context: Context) :
             // Update the corrected sentence
             corrected = correctedSentence.toString().trim().capitalizeWords()
             val lastSpaceIndex = corrected.lastIndexOf(" ")
+            t1?.setLanguage(Locale.ENGLISH)
             if (lastSpaceIndex == -1){
                 t1?.speak(corrected, TextToSpeech.QUEUE_FLUSH, null);
             }else{
                 t1?.speak(corrected.substring(lastSpaceIndex + 1)  , TextToSpeech.QUEUE_FLUSH, null);
             }
             corrected+=" ";
-//            println(corrected)
         }
-
-        // Notify that data has changed to update the UI with the corrected sentence
-        notifyDataSetChanged()
     }
 
-    fun closeSpellCheckerSession() {
-        spellCheckerSession?.close()
-    }
-
-    fun String.capitalizeWords(delimiter: String = " ") =
+    private fun String.capitalizeWords(delimiter: String = " ") =
         split(delimiter).joinToString(delimiter) { word ->
 
             val smallCaseWord = word.lowercase()

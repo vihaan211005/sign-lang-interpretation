@@ -29,17 +29,16 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.mediapipe.examples.gesturerecognizer.GestureRecognizerHelper
-import com.google.mediapipe.examples.gesturerecognizer.MainViewModel
 import com.google.mediapipe.examples.gesturerecognizer.R
 import com.google.mediapipe.examples.gesturerecognizer.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
+import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -59,7 +58,6 @@ class CameraFragment : Fragment(),
         get() = _fragmentCameraBinding!!
 
     private lateinit var gestureRecognizerHelper: GestureRecognizerHelper
-    private val viewModel: MainViewModel by activityViewModels()
     private var defaultNumResults = 1
     private val gestureRecognizerResultAdapter: GestureRecognizerResultsAdapter by lazy {
         GestureRecognizerResultsAdapter(requireContext()).apply {
@@ -74,6 +72,35 @@ class CameraFragment : Fragment(),
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
+
+    // Parameters
+    private var minHandDetectionConfidence = GestureRecognizerHelper.DEFAULT_HAND_DETECTION_CONFIDENCE
+    private var minHandTrackingConfidence = GestureRecognizerHelper.DEFAULT_HAND_TRACKING_CONFIDENCE
+    private var minHandPresenceConfidence = GestureRecognizerHelper.DEFAULT_HAND_PRESENCE_CONFIDENCE
+    private var minGestureConfidence = GestureRecognizerHelper.DEFAULT_MIN_GESTURE_CONFIDENCE
+    private var minFramesConfidence = GestureRecognizerHelper.DEFAULT_MIN_FRAMES_CONFIDENCE
+    private var currentDelegate = GestureRecognizerHelper.DELEGATE_CPU
+    private var currentLanguage = GestureRecognizerHelper.LANGUAGE_ENGLISH
+
+    // Condition for downloading
+    private val conditions = DownloadConditions.Builder()
+        .build()
+
+    // Languages
+    private val languageArray = arrayOf("en",
+        "hi", "mr", "brx", "doi", "gu", "as", "kn", "ks",
+        "kok", "mai", "ml", "mni", "bn", "ne", "or", "pa",
+        "sa", "sat", "sd", "ta", "te", "ur"
+    )
+    private val fullLanguageArray = arrayOf("English",
+        "Hindi", "Marathi", "Bodo", "Dogri", "Gujarati", "Assamese",
+        "Kannada", "Kashmiri", "Konkani", "Maithili", "Malayalam",
+        "Manipuri", "Bengali", "Nepali", "Odia", "Punjabi", "Sanskrit",
+        "Santali", "Sindhi", "Tamil", "Telugu", "Urdu"
+    )
+
+    // Translators
+    private val translatorArray = Array<Translator?>(languageArray.size) {null}
 
     override fun onResume() {
         super.onResume()
@@ -94,20 +121,7 @@ class CameraFragment : Fragment(),
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (this::gestureRecognizerHelper.isInitialized) {
-            viewModel.setMinHandDetectionConfidence(gestureRecognizerHelper.minHandDetectionConfidence)
-            viewModel.setMinHandTrackingConfidence(gestureRecognizerHelper.minHandTrackingConfidence)
-            viewModel.setMinHandPresenceConfidence(gestureRecognizerHelper.minHandPresenceConfidence)
-            viewModel.setMinGestureConfidence(gestureRecognizerHelper.minGestureConfidence)
-            viewModel.setMinFramesConfidence(gestureRecognizerHelper.minFramesConfidence)
-            viewModel.setDelegate(gestureRecognizerHelper.currentDelegate)
-
-            // Close the Gesture Recognizer helper and release resources
-            backgroundExecutor.execute { gestureRecognizerHelper.clearGestureRecognizer() }
-        }
-    }
+    override fun onPause() = super.onPause()
 
     override fun onDestroyView() {
         _fragmentCameraBinding = null
@@ -154,56 +168,28 @@ class CameraFragment : Fragment(),
             gestureRecognizerHelper = GestureRecognizerHelper(
                 context = requireContext(),
                 runningMode = RunningMode.LIVE_STREAM,
-                minHandDetectionConfidence = viewModel.currentMinHandDetectionConfidence,
-                minHandTrackingConfidence = viewModel.currentMinHandTrackingConfidence,
-                minHandPresenceConfidence = viewModel.currentMinHandPresenceConfidence,
-                currentDelegate = viewModel.currentDelegate,
+                minHandDetectionConfidence = minHandDetectionConfidence,
+                minHandTrackingConfidence = minHandTrackingConfidence,
+                minHandPresenceConfidence = minHandPresenceConfidence,
+                currentDelegate = currentDelegate,
                 gestureRecognizerListener = this
             )
         }
 
-        //Create translator
-        val optionsHindi = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.ENGLISH)
-            .setTargetLanguage(TranslateLanguage.HINDI)
-            .build()
-        val englishHindiTranslator = Translation.getClient(optionsHindi)
+        updateVariables()
 
-        //Download translator
-        val conditions = DownloadConditions.Builder()
-            .build()
-        englishHindiTranslator.downloadModelIfNeeded(conditions)
-            .addOnSuccessListener {
-                // Model downloaded successfully. Okay to start translating.
-                // (Set a flag, unhide the translation UI, etc.)
-            }
-            .addOnFailureListener { exception ->
-                // Model couldn’t be downloaded or other internal error.
-                // ...
-            }
-        //Create translator
-        val optionsMarathi = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.ENGLISH)
-            .setTargetLanguage(TranslateLanguage.MARATHI)
-            .build()
-        val englishMarathiTranslator = Translation.getClient(optionsMarathi)
+        for (i in translatorArray.indices)
+            if(i!=0)
+                translatorArray[i] = createTranslator(languageArray[i])
 
-        //Download translator
-        englishMarathiTranslator.downloadModelIfNeeded(conditions)
-            .addOnSuccessListener {
-                // Model downloaded successfully. Okay to start translating.
-                // (Set a flag, unhide the translation UI, etc.)
-            }
-            .addOnFailureListener { exception ->
-                // Model couldn’t be downloaded or other internal error.
-                // ...
-            }
+        downloadTranslator(1)
+        downloadTranslator(2)
 
         // Attach listeners to UI control widgets
         initBottomSheetControls()
 
         //How to use
-        fragmentCameraBinding.buttonHtu.setOnClickListener(View.OnClickListener { // Handle the "HTU" button click here
+        fragmentCameraBinding.buttonHtu.setOnClickListener{ // Handle the "HTU" button click here
             fragmentCameraBinding.viewFinder.visibility = View.INVISIBLE
             fragmentCameraBinding.buttons.visibility = View.INVISIBLE
             fragmentCameraBinding.overlay.visibility = View.INVISIBLE
@@ -211,9 +197,9 @@ class CameraFragment : Fragment(),
             fragmentCameraBinding.upArrow.visibility = View.INVISIBLE
 
             fragmentCameraBinding.htuPage.visibility = View.VISIBLE
-        })
+        }
 
-        fragmentCameraBinding.closeButton.setOnClickListener(View.OnClickListener { // Handle the "close HTU" button click here}
+        fragmentCameraBinding.closeButton.setOnClickListener{ // Handle the "close HTU" button click here}
             fragmentCameraBinding.viewFinder.visibility = View.VISIBLE
             fragmentCameraBinding.buttons.visibility = View.VISIBLE
             fragmentCameraBinding.overlay.visibility = View.VISIBLE
@@ -221,155 +207,115 @@ class CameraFragment : Fragment(),
             fragmentCameraBinding.upArrow.visibility = View.VISIBLE
 
             fragmentCameraBinding.htuPage.visibility = View.INVISIBLE
-        })
+        }
 
             //Add btns clicks
-        fragmentCameraBinding.buttonClear.setOnClickListener(View.OnClickListener { // Handle the "Clear" button click here
+        fragmentCameraBinding.buttonClear.setOnClickListener{ // Handle the "Clear" button click here
             gestureRecognizerResultAdapter.corrected = ""
             gestureRecognizerResultAdapter.total = ""
-        })
+        }
 
-        fragmentCameraBinding.buttonSpeak.setOnClickListener(View.OnClickListener { // Handle the "Speak" button click here
-            if(gestureRecognizerHelper.currentLanguage == 0){
+        fragmentCameraBinding.buttonSpeak.setOnClickListener{ // Handle the "Speak" button click here
+            if(currentLanguage == 0){
                 gestureRecognizerResultAdapter.t1?.setLanguage(Locale.ENGLISH)
                 gestureRecognizerResultAdapter.t1?.speak(gestureRecognizerResultAdapter.corrected, TextToSpeech.QUEUE_FLUSH, null);
             }
-            if(gestureRecognizerHelper.currentLanguage == 1){
-                englishHindiTranslator.translate(gestureRecognizerResultAdapter.corrected)
+            else{
+                translatorArray[currentLanguage]!!.translate(gestureRecognizerResultAdapter.corrected)
                     .addOnSuccessListener { translatedText ->
-                        gestureRecognizerResultAdapter.t1?.setLanguage(Locale("hi", "IN"))
+                        gestureRecognizerResultAdapter.t1?.setLanguage(Locale(languageArray[1], "IN"))
                         gestureRecognizerResultAdapter.t1?.speak(translatedText, TextToSpeech.QUEUE_FLUSH, null);
                     }
-                    .addOnFailureListener { exception ->
+                    .addOnFailureListener { _ ->
                         // Error.
                         // ...
                     }
             }
-            if(gestureRecognizerHelper.currentLanguage == 2){
-                englishMarathiTranslator.translate(gestureRecognizerResultAdapter.corrected)
-                    .addOnSuccessListener { translatedText ->
-                        gestureRecognizerResultAdapter.t1?.setLanguage(Locale("mr", "IN"))
-                        gestureRecognizerResultAdapter.t1?.speak(translatedText, TextToSpeech.QUEUE_FLUSH, null);
-                    }
-                    .addOnFailureListener { exception ->
-                        // Error.
-                        // ...
-                    }
-            }
-        })
+        }
     }
 
     private fun initBottomSheetControls() {
-        // init bottom sheet settings
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandDetectionConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandTrackingConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinHandPresenceConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.gestureThresholdValue.text =
-            String.format(
-                Locale.US, "%.2f", viewModel.currentMinGestureConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.framesThresholdValue.text =
-            String.format(
-                Locale.US, "%d", viewModel.currentMinFramesConfidence
-            )
+        setToUi()
 
         // When clicked, lower hand detection score threshold floor
         fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandDetectionConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandDetectionConfidence -= 0.1f
+            if (minHandDetectionConfidence >= 0.2) {
+                minHandDetectionConfidence -= 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, raise hand detection score threshold floor
         fragmentCameraBinding.bottomSheetLayout.detectionThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandDetectionConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandDetectionConfidence += 0.1f
+            if (minHandDetectionConfidence <= 0.8) {
+                minHandDetectionConfidence += 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, lower hand tracking score threshold floor
         fragmentCameraBinding.bottomSheetLayout.trackingThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandTrackingConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandTrackingConfidence -= 0.1f
+            if (minHandTrackingConfidence >= 0.2) {
+                minHandTrackingConfidence -= 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, raise hand tracking score threshold floor
         fragmentCameraBinding.bottomSheetLayout.trackingThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandTrackingConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandTrackingConfidence += 0.1f
+            if (minHandTrackingConfidence <= 0.8) {
+                minHandTrackingConfidence += 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, lower hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.presenceThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandPresenceConfidence >= 0.2) {
-                gestureRecognizerHelper.minHandPresenceConfidence -= 0.1f
+            if (minHandPresenceConfidence >= 0.2) {
+                minHandPresenceConfidence -= 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, raise hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.presenceThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minHandPresenceConfidence <= 0.8) {
-                gestureRecognizerHelper.minHandPresenceConfidence += 0.1f
+            if (minHandPresenceConfidence <= 0.8) {
+                minHandPresenceConfidence += 0.1f
                 updateControlsUi()
             }
         }
 
         // When clicked, lower hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.gestureThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minGestureConfidence >= 0.5) {
-                gestureRecognizerHelper.minGestureConfidence -= 0.05f
+            if (minGestureConfidence >= 0.5) {
+                minGestureConfidence -= 0.05f
                 updateControlsUi()
             }
         }
 
         // When clicked, raise hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.gestureThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minGestureConfidence <= 1) {
-                gestureRecognizerHelper.minGestureConfidence += 0.05f
+            if (minGestureConfidence <= 1) {
+                minGestureConfidence += 0.05f
                 updateControlsUi()
             }
         }
 
         // When clicked, lower hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.framesThresholdMinus.setOnClickListener {
-            if (gestureRecognizerHelper.minFramesConfidence >= 5) {
-                gestureRecognizerHelper.minFramesConfidence -= 2
+            if (minFramesConfidence >= 5) {
+                minFramesConfidence -= 2
                 updateControlsUi()
             }
         }
 
         // When clicked, raise hand presence score threshold floor
         fragmentCameraBinding.bottomSheetLayout.framesThresholdPlus.setOnClickListener {
-            if (gestureRecognizerHelper.minFramesConfidence <= 30) {
-                gestureRecognizerHelper.minFramesConfidence += 2
+            if (minFramesConfidence <= 30) {
+                minFramesConfidence += 2
                 updateControlsUi()
             }
         }
-
-        // When clicked, change the underlying hardware used for inference.
-        // Current options are CPU and GPU
-        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-            viewModel.currentDelegate, false
-        )
-        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.setSelection(
-            viewModel.currentLanguage, false
-        )
 
         fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -377,7 +323,9 @@ class CameraFragment : Fragment(),
                     p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                 ) {
                     try {
-                        gestureRecognizerHelper.currentLanguage = p2
+                        currentLanguage = p2
+                        if(p2!=0)
+                            downloadTranslator(currentLanguage)
                         updateControlsUi()
                     } catch(e: UninitializedPropertyAccessException) {
                         Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
@@ -396,7 +344,7 @@ class CameraFragment : Fragment(),
                     p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
                 ) {
                     try {
-                        gestureRecognizerHelper.currentDelegate = p2
+                        currentDelegate = p2
                         updateControlsUi()
                     } catch(e: UninitializedPropertyAccessException) {
                         Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
@@ -413,42 +361,8 @@ class CameraFragment : Fragment(),
     // Update the values displayed in the bottom sheet. Reset recognition
     // helper.
     private fun updateControlsUi() {
-
-        gestureRecognizerResultAdapter.minGestureConfidence = gestureRecognizerHelper.minGestureConfidence
-        gestureRecognizerResultAdapter.minFramesConfidence = gestureRecognizerHelper.minFramesConfidence
-
-
-        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-            String.format(
-                Locale.US,
-                "%.2f",
-                gestureRecognizerHelper.minHandDetectionConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-            String.format(
-                Locale.US,
-                "%.2f",
-                gestureRecognizerHelper.minHandTrackingConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-            String.format(
-                Locale.US,
-                "%.2f",
-                gestureRecognizerHelper.minHandPresenceConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.gestureThresholdValue.text =
-            String.format(
-                Locale.US,
-                "%.2f",
-                gestureRecognizerHelper.minGestureConfidence
-            )
-        fragmentCameraBinding.bottomSheetLayout.framesThresholdValue.text =
-            String.format(
-                Locale.US,
-                "%d",
-                gestureRecognizerHelper.minFramesConfidence
-            )
-
+        setToUi()
+        updateVariables()
         // Needs to be cleared instead of reinitialized because the GPU
         // delegate needs to be initialized on the thread using it when applicable
         backgroundExecutor.execute {
@@ -456,6 +370,72 @@ class CameraFragment : Fragment(),
             gestureRecognizerHelper.setupGestureRecognizer()
         }
         fragmentCameraBinding.overlay.clear()
+    }
+
+    private fun setToUi() {
+        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%.2f",
+                minHandDetectionConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%.2f",
+                minHandTrackingConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%.2f",
+                minHandPresenceConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.gestureThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%.2f",
+                minGestureConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.framesThresholdValue.text =
+            String.format(
+                Locale.US,
+                "%d",
+                minFramesConfidence
+            )
+        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(currentDelegate, false)
+        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.setSelection(currentLanguage, false)
+    }
+
+    private fun updateVariables() {
+        gestureRecognizerResultAdapter.minGestureConfidence = minGestureConfidence
+        gestureRecognizerResultAdapter.minFramesConfidence = minFramesConfidence
+
+        if(this::gestureRecognizerHelper.isInitialized) {
+            gestureRecognizerHelper.minHandDetectionConfidence = minHandDetectionConfidence
+            gestureRecognizerHelper.minHandPresenceConfidence = minHandPresenceConfidence
+            gestureRecognizerHelper.minHandTrackingConfidence = minHandTrackingConfidence
+            gestureRecognizerHelper.currentDelegate = currentDelegate
+        }
+    }
+
+    private fun createTranslator(lang: String): Translator {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(lang)
+            .build()
+        val translator = Translation.getClient(options)
+        return translator
+    }
+
+    private fun downloadTranslator(which: Int){
+        (translatorArray[which])!!.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Downloaded " + fullLanguageArray[which], Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { _ ->
+                Toast.makeText(context, "Failed Downloaded " + fullLanguageArray[which], Toast.LENGTH_SHORT).show()
+            }
     }
 
     // Initialize CameraX, and prepare to bind the camera use cases

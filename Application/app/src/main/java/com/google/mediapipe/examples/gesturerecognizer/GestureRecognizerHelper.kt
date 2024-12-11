@@ -36,9 +36,6 @@ class GestureRecognizerHelper(
     var minHandDetectionConfidence: Float = DEFAULT_HAND_DETECTION_CONFIDENCE,
     var minHandTrackingConfidence: Float = DEFAULT_HAND_TRACKING_CONFIDENCE,
     var minHandPresenceConfidence: Float = DEFAULT_HAND_PRESENCE_CONFIDENCE,
-    var minGestureConfidence: Float = DEFAULT_MIN_GESTURE_CONFIDENCE,
-    var minFramesConfidence: Int = DEFAULT_MIN_FRAMES_CONFIDENCE,
-    var currentLanguage: Int = LANGUAGE_ENGLISH,
     var currentDelegate: Int = DELEGATE_CPU,
     var runningMode: RunningMode = RunningMode.IMAGE,
     val context: Context,
@@ -330,7 +327,6 @@ class GestureRecognizerHelper(
         const val LANGUAGE_ENGLISH = 0
         const val LANGUAGE_HINDI = 1
         const val LANGUAGE_MARATHI = 2
-        const val LANGUAGE_URDU = 3
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
         const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.5F
