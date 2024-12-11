@@ -16,6 +16,9 @@
 package com.google.mediapipe.examples.gesturerecognizer.fragment
 
 import android.annotation.SuppressLint
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
 import android.content.res.Configuration
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -102,6 +105,10 @@ class CameraFragment : Fragment(),
     // Translators
     private val translatorArray = Array<Translator?>(languageArray.size) {null}
 
+    // Preferences
+    private var sharedPreferences : SharedPreferences? = null
+    private var editor : Editor? = null
+
     override fun onResume() {
         super.onResume()
         // Make sure that all permissions are still present, since the
@@ -161,6 +168,9 @@ class CameraFragment : Fragment(),
             // Set up the camera and its use cases
             setUpCamera()
         }
+        sharedPreferences = requireContext().getSharedPreferences("KshamPreference", MODE_PRIVATE)
+        editor = sharedPreferences!!.edit()
+        getLocalParam()
 
         // Create the Hand Gesture Recognition Helper that will handle the
         // inference
@@ -363,6 +373,7 @@ class CameraFragment : Fragment(),
     private fun updateControlsUi() {
         setToUi()
         updateVariables()
+        storeLocalParam()
         // Needs to be cleared instead of reinitialized because the GPU
         // delegate needs to be initialized on the thread using it when applicable
         backgroundExecutor.execute {
@@ -436,6 +447,28 @@ class CameraFragment : Fragment(),
             .addOnFailureListener { _ ->
                 Toast.makeText(context, "Failed Downloaded " + fullLanguageArray[which], Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun storeLocalParam() {
+        editor!!.putFloat("minHandDetectionConfidence", minHandDetectionConfidence)
+            .putFloat("minHandTrackingConfidence", minHandTrackingConfidence)
+            .putFloat("minHandPresenceConfidence", minHandPresenceConfidence)
+            .putFloat("minGestureConfidence", minGestureConfidence)
+            .putInt("minFramesConfidence", minFramesConfidence)
+            .putInt("currentDelegate", currentDelegate)
+            .putInt("currentLanguage", currentLanguage)
+
+        editor!!.apply()
+    }
+
+    private fun getLocalParam() {
+        minHandDetectionConfidence = sharedPreferences!!.getFloat("minHandDetectionConfidence", minHandDetectionConfidence)
+        minHandTrackingConfidence = sharedPreferences!!.getFloat("minHandTrackingConfidence", minHandTrackingConfidence)
+        minHandPresenceConfidence = sharedPreferences!!.getFloat("minHandPresenceConfidence", minHandPresenceConfidence)
+        minGestureConfidence = sharedPreferences!!.getFloat("minGestureConfidence", minGestureConfidence)
+        minFramesConfidence = sharedPreferences!!.getInt("minFramesConfidence", minFramesConfidence)
+        currentDelegate = sharedPreferences!!.getInt("currentDelegate", currentDelegate)
+        currentLanguage = sharedPreferences!!.getInt("currentLanguage", currentLanguage)
     }
 
     // Initialize CameraX, and prepare to bind the camera use cases
