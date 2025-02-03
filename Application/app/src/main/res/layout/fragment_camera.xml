@@ -20,6 +20,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:id="@+id/language_page"
+        android:visibility="invisible">
+        <!-- Close Button (Cross) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/close_button_lang_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:text="✕"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -685,7 +714,16 @@
                 android:id="@+id/button_htu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
                 android:text="How To Use"
+                android:backgroundTint="@color/mp_color_primary"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/button_lang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Language"
                 android:backgroundTint="@color/mp_color_primary"
                 android:textColor="@android:color/white" />
         </LinearLayout>

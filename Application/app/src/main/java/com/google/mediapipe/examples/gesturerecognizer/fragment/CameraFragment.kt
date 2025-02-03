@@ -15,6 +15,7 @@
  */
 package com.google.mediapipe.examples.gesturerecognizer.fragment
 
+import LanguageAdapter
 import android.annotation.SuppressLint
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -47,6 +48,9 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.mediapipe.examples.gesturerecognizer.Language
 
 class CameraFragment : Fragment(),
     GestureRecognizerHelper.GestureRecognizerListener {
@@ -101,6 +105,13 @@ class CameraFragment : Fragment(),
         "Manipuri", "Bengali", "Nepali", "Odia", "Punjabi", "Sanskrit",
         "Santali", "Sindhi", "Tamil", "Telugu", "Urdu"
     )
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: LanguageAdapter
+
+    val languages = fullLanguageArray.mapIndexed { index, language ->
+        Language(name = language, num = index, isDownloaded = index == 0, isSelected = index == 0)
+    }.toMutableList()
 
     // Translators
     private val translatorArray = Array<Translator?>(languageArray.size) {null}
@@ -170,6 +181,31 @@ class CameraFragment : Fragment(),
         }
         sharedPreferences = requireContext().getSharedPreferences("KshamPreference", MODE_PRIVATE)
         editor = sharedPreferences!!.edit()
+
+        recyclerView = view.findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter = LanguageAdapter(languages,
+            onDownload = { language ->
+                if(language.num != 0) {
+                    downloadTranslator(language.num, language)
+                }
+            },
+            onSelect = { language ->
+                currentLanguage = language.num
+                for(i in languages){
+                    i.isSelected = false
+                }
+                language.isSelected = true
+                sortLanguages()
+                adapter.notifyDataSetChanged()
+                updateControlsUi()
+                Toast.makeText(context, "${language.name} selected!", Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        recyclerView.adapter = adapter
+
         getLocalParam()
 
         // Create the Hand Gesture Recognition Helper that will handle the
@@ -192,9 +228,11 @@ class CameraFragment : Fragment(),
             if(i!=0)
                 translatorArray[i] = createTranslator(languageArray[i])
 
-        downloadTranslator(1)
-        downloadTranslator(2)
-
+        for (i in languages){
+            if ((i.num==1 || i.num==2)&&i.isDownloaded == false){
+                downloadTranslator(i.num,i)
+            }
+        }
         // Attach listeners to UI control widgets
         initBottomSheetControls()
 
@@ -209,6 +247,16 @@ class CameraFragment : Fragment(),
             fragmentCameraBinding.htuPage.visibility = View.VISIBLE
         }
 
+        fragmentCameraBinding.buttonLang.setOnClickListener{
+            fragmentCameraBinding.viewFinder.visibility = View.INVISIBLE
+            fragmentCameraBinding.buttons.visibility = View.INVISIBLE
+            fragmentCameraBinding.overlay.visibility = View.INVISIBLE
+            fragmentCameraBinding.recyclerviewResults.visibility = View.INVISIBLE
+            fragmentCameraBinding.upArrow.visibility = View.INVISIBLE
+
+            fragmentCameraBinding.languagePage.visibility = View.VISIBLE
+        }
+
         fragmentCameraBinding.closeButton.setOnClickListener{ // Handle the "close HTU" button click here}
             fragmentCameraBinding.viewFinder.visibility = View.VISIBLE
             fragmentCameraBinding.buttons.visibility = View.VISIBLE
@@ -217,6 +265,16 @@ class CameraFragment : Fragment(),
             fragmentCameraBinding.upArrow.visibility = View.VISIBLE
 
             fragmentCameraBinding.htuPage.visibility = View.INVISIBLE
+        }
+
+        fragmentCameraBinding.closeButtonLangPage.setOnClickListener{ // Handle the "close HTU" button click here}
+            fragmentCameraBinding.viewFinder.visibility = View.VISIBLE
+            fragmentCameraBinding.buttons.visibility = View.VISIBLE
+            fragmentCameraBinding.overlay.visibility = View.VISIBLE
+            fragmentCameraBinding.recyclerviewResults.visibility = View.VISIBLE
+            fragmentCameraBinding.upArrow.visibility = View.VISIBLE
+
+            fragmentCameraBinding.languagePage.visibility = View.INVISIBLE
         }
 
             //Add btns clicks
@@ -240,6 +298,18 @@ class CameraFragment : Fragment(),
                         // Error.
                         // ...
                     }
+            }
+        }
+    }
+
+    private fun sortLanguages() {
+        languages.sortWith { lang1, lang2 ->
+            when {
+                lang1.isDownloaded && !lang2.isDownloaded -> -1
+                !lang1.isDownloaded && lang2.isDownloaded -> 1
+                lang1.isDownloaded && lang2.isDownloaded && lang1.isSelected && !lang2.isSelected -> -1
+                lang1.isDownloaded && lang2.isDownloaded && !lang1.isSelected && lang2.isSelected -> 1
+                else -> 0
             }
         }
     }
@@ -327,26 +397,25 @@ class CameraFragment : Fragment(),
             }
         }
 
-        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-                ) {
-                    try {
-                        currentLanguage = p2
-                        if(p2!=0)
-                            downloadTranslator(currentLanguage)
-                        updateControlsUi()
-                    } catch(e: UninitializedPropertyAccessException) {
-                        Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
-
-                    }
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /* no op */
-                }
-            }
+//        fragmentCameraBinding.bottomSheetLayout.spinnerLanguage.onItemSelectedListener =
+//            object : AdapterView.OnItemSelectedListener {
+//                override fun onItemSelected(
+//                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
+//                ) {
+//                    try {
+//                        if(p2!=0)
+//                            downloadTranslator(p2)
+//                    } catch(e: UninitializedPropertyAccessException) {
+//                        Log.e(TAG, "GestureRecognizerHelper has not been initialized yet.")
+//
+//                    }
+//                    ;
+//                }
+//
+//                override fun onNothingSelected(p0: AdapterView<*>?) {
+//                    /* no op */
+//                }
+//            }
 
         fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -439,10 +508,15 @@ class CameraFragment : Fragment(),
         return translator
     }
 
-    private fun downloadTranslator(which: Int){
+    private fun downloadTranslator(which: Int, language: Language){
         (translatorArray[which])!!.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
                 Toast.makeText(context, "Downloaded " + fullLanguageArray[which], Toast.LENGTH_SHORT).show()
+                updateControlsUi()
+                language.isDownloaded = true
+                sortLanguages()
+                adapter.notifyDataSetChanged()
+                storeLocalParam()
             }
             .addOnFailureListener { _ ->
                 Toast.makeText(context, "Failed Downloaded " + fullLanguageArray[which], Toast.LENGTH_SHORT).show()
@@ -450,6 +524,9 @@ class CameraFragment : Fragment(),
     }
 
     private fun storeLocalParam() {
+        val gson = Gson()
+        val json = gson.toJson(languages)
+
         editor!!.putFloat("minHandDetectionConfidence", minHandDetectionConfidence)
             .putFloat("minHandTrackingConfidence", minHandTrackingConfidence)
             .putFloat("minHandPresenceConfidence", minHandPresenceConfidence)
@@ -457,6 +534,7 @@ class CameraFragment : Fragment(),
             .putInt("minFramesConfidence", minFramesConfidence)
             .putInt("currentDelegate", currentDelegate)
             .putInt("currentLanguage", currentLanguage)
+            .putString("curState", json)
 
         editor!!.apply()
     }
@@ -469,6 +547,23 @@ class CameraFragment : Fragment(),
         minFramesConfidence = sharedPreferences!!.getInt("minFramesConfidence", minFramesConfidence)
         currentDelegate = sharedPreferences!!.getInt("currentDelegate", currentDelegate)
         currentLanguage = sharedPreferences!!.getInt("currentLanguage", currentLanguage)
+        val json = sharedPreferences!!.getString("curState", null)
+        if(json!=null) {
+            val gson = Gson()
+            val type = object : com.google.gson.reflect.TypeToken<MutableList<Language>>() {}.type
+            val languages_temp:MutableList<Language> = gson.fromJson(json, type)
+            for (i in languages_temp){
+                for (j in languages){
+                    if(i.num == j.num){
+                        j.isDownloaded = i.isDownloaded
+                        j.isSelected = i.isSelected
+                    }
+                }
+            }
+            sortLanguages()
+
+            adapter.notifyDataSetChanged()
+        }
     }
 
     // Initialize CameraX, and prepare to bind the camera use cases

@@ -325,8 +325,6 @@ class GestureRecognizerHelper(
         private const val MP_RECOGNIZER_TASK = "gesture_recognizer.task"
 
         const val LANGUAGE_ENGLISH = 0
-        const val LANGUAGE_HINDI = 1
-        const val LANGUAGE_MARATHI = 2
         const val DELEGATE_CPU = 0
         const val DELEGATE_GPU = 1
         const val DEFAULT_HAND_DETECTION_CONFIDENCE = 0.5F
